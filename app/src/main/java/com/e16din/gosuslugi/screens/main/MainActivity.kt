@@ -32,24 +32,26 @@ data class MainScreenState(
 //todo: Сделать скрывающийся при скролле заголовок
 class MainActivity : AppCompatActivity(), LocalCoroutineScope {
 
-    class UserAgent
-    class SystemAgent
-    class ServerAgent
+    class ToUser
+    class ToSystem
+    class ToServer
+
+//    to user:
+//    - show main screen
+//    - show next screen
+
 
     // Subjects:
 
-    val userAgent = UserAgent()
-    val systemAgent = SystemAgent()
-    val serverAgent = ServerAgent()
+    val toUser = ToUser()
+    val toSystem = ToSystem()
+    val toServer = ToServer()
 
     // Fruits:
 
     val app get() = App.get
     val activity = this
     val screenState get() = app.screenStatesMap[MainActivity::class] as MainScreenState
-
-    // Temp:
-
     var progressDialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,58 +62,58 @@ class MainActivity : AppCompatActivity(), LocalCoroutineScope {
     }
 
     private fun runActions() = launch {
-        userAgent.showMainLayout()
-        systemAgent.initViewActions()
+        toUser.showMainLayout()
+        toSystem.initViewActions()
     }
 
     private fun runSearchActions() = launch {
         screenState.searchQuery = vSearchField.text.toString()
 
-        userAgent.showServicesLoadingProgress()
-        serverAgent.loadServices()
-        userAgent.hideServicesLoadingProgress()
-        userAgent.showServicesList()
+        toUser.showServicesLoadingProgress()
+        toServer.loadServices()
+        toUser.hideServicesLoadingProgress()
+        toUser.showServicesList()
 
         if (screenState.searchQuery.isNotBlank()) {
-            userAgent.hideSearchButton()
-            userAgent.showClearButton()
+            toUser.hideSearchButton()
+            toUser.showClearButton()
         }
     }
 
-    fun UserAgent.showServicesLoadingProgress() {
+    fun ToUser.showServicesLoadingProgress() {
         progressDialog = ProgressDialog(activity)
         progressDialog?.setMessage("Загрузка услуг..")
         progressDialog?.show()
     }
 
-    fun UserAgent.hideServicesLoadingProgress() {
+    fun ToUser.hideServicesLoadingProgress() {
         progressDialog?.hide()
     }
 
-    fun UserAgent.showMainLayout() {
+    fun ToUser.showMainLayout() {
         setContentView(R.layout.screen_main)
 
         vServicesList.layoutManager = LinearLayoutManager(activity)
         vServicesList.adapter = ServicesAdapter(screenState)
     }
 
-    fun UserAgent.showServicesList() {
+    fun ToUser.showServicesList() {
         vServicesList.adapter?.notifyDataSetChanged()
     }
 
-    fun UserAgent.showCreateRequestScreen() {
+    fun ToUser.showCreateRequestScreen() {
         val intent = Intent(activity, CreateRequestActivity::class.java)
         startActivity(intent)
     }
 
-    fun SystemAgent.initViewActions() {
+    fun ToSystem.initViewActions() {
         ItemClickSupport.addTo(vServicesList).setOnItemClickListener { vList, position, v ->
             val serviceItem = screenState.serviceItemList[position]
             val serviceData = screenState.serviceDataList[position]
             app.screenStatesMap[CreateRequestActivity::class] =
                 CreateRequestScreenState(serviceItem, serviceData)
 
-            userAgent.showCreateRequestScreen()
+            toUser.showCreateRequestScreen()
         }
 
         vSearchButton.setOnClickListener {
@@ -120,10 +122,10 @@ class MainActivity : AppCompatActivity(), LocalCoroutineScope {
 
         vClearButton.setOnClickListener {
             screenState.searchQuery = ""
-            userAgent.showSearchFieldWithQuery()
+            toUser.showSearchFieldWithQuery()
 
-            userAgent.showSearchButton()
-            userAgent.hideClearButton()
+            toUser.showSearchButton()
+            toUser.hideClearButton()
 
             runSearchActions()
         }
@@ -138,27 +140,27 @@ class MainActivity : AppCompatActivity(), LocalCoroutineScope {
         }
     }
 
-    fun UserAgent.showSearchFieldWithQuery() {
+    fun ToUser.showSearchFieldWithQuery() {
         vSearchField.setText(screenState.searchQuery)
     }
 
-    fun UserAgent.showSearchButton() {
+    fun ToUser.showSearchButton() {
         vSearchButton.visibility = View.VISIBLE
     }
 
-    fun UserAgent.hideSearchButton() {
+    fun ToUser.hideSearchButton() {
         vSearchButton.visibility = View.GONE
     }
 
-    fun UserAgent.showClearButton() {
+    fun ToUser.showClearButton() {
         vClearButton.visibility = View.VISIBLE
     }
 
-    fun UserAgent.hideClearButton() {
+    fun ToUser.hideClearButton() {
         vClearButton.visibility = View.GONE
     }
 
-    suspend fun ServerAgent.loadServices() {
+    suspend fun ToServer.loadServices() {
         val result = Requests.commonApi.loadServices(
             getAuthHeader(),
             screenState.searchQuery

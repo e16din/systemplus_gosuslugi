@@ -39,22 +39,22 @@ class ProfileActivity : AppCompatActivity(), LocalCoroutineScope {
     }
 
     private fun runActions() {
-        userAgent.showProfileLayout()
+        userAgent.lookAtProfileLayout()
         systemAgent.initActions()
-        userAgent.showRequestsHistoryList()
+        userAgent.lookAtRequestsHistoryList()
 
     }
 
-    fun UserAgent.showRequestDetailsScreen() {
+    fun UserAgent.lookAtRequestDetailsScreen() {
         val intent = Intent(activity, RequestDetailsActivity::class.java)
         startActivity(intent)
     }
 
-    fun UserAgent.showProfileLayout() {
+    fun UserAgent.lookAtProfileLayout() {
         setContentView(R.layout.screen_profile)
     }
 
-    fun UserAgent.showRequestsHistoryList() {
+    fun UserAgent.lookAtRequestsHistoryList() {
         vRequestsHistoryList.layoutManager = LinearLayoutManager(activity)
 
         val items = ArrayList<RequestHistoryItem>()
@@ -66,7 +66,7 @@ class ProfileActivity : AppCompatActivity(), LocalCoroutineScope {
 
     fun SystemAgent.initActions() {
         ItemClickSupport.addTo(vRequestsHistoryList).setOnItemClickListener { vList, position, v ->
-            userAgent.showRequestDetailsScreen()
+            userAgent.lookAtRequestDetailsScreen()
         }
     }
 }

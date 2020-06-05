@@ -39,20 +39,20 @@ class RequestsHistoryAdapter(var items: MutableList<RequestHistoryItem>) :
     override fun onBindViewHolder(holder: RequestHistoryVh, position: Int) {
         val item = items[position]
 
-        userAgent.showRequestName(holder.itemView, item.requestName)
-        userAgent.showRequestDate(holder.itemView, item.date)
-        userAgent.showRequestState(holder.itemView, item.state)
+        userAgent.lookAtRequestName(holder.itemView, item.requestName)
+        userAgent.lookAtRequestDate(holder.itemView, item.date)
+        userAgent.lookAtRequestState(holder.itemView, item.state)
     }
 
-    fun UserAgent.showRequestName(view: View, requestName: String) {
+    fun UserAgent.lookAtRequestName(view: View, requestName: String) {
         view.vRequestNameLabel.text = requestName
     }
 
-    fun UserAgent.showRequestDate(view: View, date: String) {
+    fun UserAgent.lookAtRequestDate(view: View, date: String) {
         view.vDateLabel.text = date
     }
 
-    fun UserAgent.showRequestState(view: View, state: RequestState) {
+    fun UserAgent.lookAtRequestState(view: View, state: RequestState) {
         view.vStateLabel.text = when (state) {
             RequestState.InWork -> "В обработке"
             RequestState.Success -> "Заявка одобрена"
